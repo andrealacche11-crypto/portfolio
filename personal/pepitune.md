@@ -92,17 +92,3 @@ flowchart LR
     PIPE --> AI["LLM (Gemini) +<br/>Whisper"]
     API --> AI
 ```
-
-## Key decisions
-
-- **Simple beat complex.** For mood I tested four richer approaches: audio features,
-  lyrics, and two kinds of embeddings. All lost to one well-anchored LLM prompt, so that
-  shipped.
-- **Evidence for every change.** The mood list went 12 → 8 → 6 → 8, each step backed by
-  benchmarks of what people can actually tell apart.
-- **Own the bottleneck.** Third-party lyrics APIs were the rate limit, so the main source
-  is a self-hosted 20M-song lyrics dataset with failover.
-
-## Next
-
-Public launch, and a scored test set for genre like the one mood already has.
