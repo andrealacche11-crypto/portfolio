@@ -80,39 +80,10 @@ from step 2, aggregated per user in Postgres.
 
 ## How detection works
 
-```mermaid
-flowchart TB
-    S[Song] --> C{"Already in the<br/>shared cache?"}
-    C -- yes --> DB
-    C -- no --> L1
-
-    subgraph LYR["Lyrics · first hit wins"]
-        direction LR
-        L1["Self-hosted<br/>lyrics database"] --> L2["Lyrics<br/>provider"] --> L3["Audio preview<br/>+ speech-to-text"] --> L4["Backup<br/>lyrics search"]
-    end
-
-    subgraph LANG["Language"]
-        direction LR
-        A1["Fast local<br/>checks"] --> A2["Statistical<br/>scoring"] --> A3["LLM, only<br/>if unsure"]
-    end
-
-    subgraph GEN["Genre"]
-        direction LR
-        G1["Music catalogues"] --> G2["Match<br/>verification"] --> G3["Genre +<br/>sub-genre"]
-    end
-
-    subgraph MOOD["Mood"]
-        direction LR
-        M1["LLM classifier"] --> M2["Guided by<br/>reference examples"]
-    end
-
-    L4 --> A1
-    C -- no --> G1
-    G3 --> M1
-    A3 --> DB[("Postgres")]
-    G3 --> DB
-    M2 --> DB
-```
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="../images/pepitune-detection-dark.svg">
+  <img src="../images/pepitune-detection-light.svg" alt="How Pepitune detects language, genre and mood" width="100%">
+</picture>
 
 - **Language:** cheap local checks decide most songs. An LLM is only called when they're unsure, which keeps cost low.
 - **Genre:** taken from music catalogues, and only accepted when the match is verified.
@@ -120,14 +91,7 @@ flowchart TB
 
 ## Architecture
 
-```mermaid
-flowchart LR
-    U((User)) --> APP["Next.js app<br/>(Vercel)"]
-    APP --> API["62 API routes<br/>(serverless)"]
-    API --> DB[("Supabase<br/>Postgres + Auth + RLS")]
-    API --> SP[Spotify Web API]
-    API --> PIPE["Detection pipeline"]
-    PIPE --> EXT["Lyrics sources,<br/>music catalogues"]
-    PIPE --> AI["LLMs +<br/>speech-to-text"]
-    API --> AI
-```
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="../images/pepitune-architecture-dark.svg">
+  <img src="../images/pepitune-architecture-light.svg" alt="Pepitune system architecture" width="100%">
+</picture>
