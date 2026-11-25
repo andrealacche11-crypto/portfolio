@@ -11,10 +11,9 @@ system works, the numbers, and the engineering decisions behind it.
 <table>
 <tr>
 <td width="50%" valign="top">
-<a href="personal/pepitune.md"><img src="images/pepitune-card.png" alt="Pepitune"></a>
 <h3><a href="personal/pepitune.md">Pepitune</a></h3>
-AI that organises an entire Spotify library by genre, language and mood.<br>
-<b>~1,000 songs/min</b> · 10+ data sources · shipped product
+AI that organises an entire Spotify library by genre, language and mood.<br><br>
+<a href="personal/pepitune.md"><img src="images/pepitune-card.png" alt="Pepitune logo"></a>
 </td>
 <td width="50%" valign="top">
 <h3>Agentic OS</h3>
