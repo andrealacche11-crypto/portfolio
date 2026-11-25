@@ -23,9 +23,9 @@ A local-first cockpit over Claude Code, with a voice agent and a plain-text memo
 </tr>
 <tr>
 <td width="50%" valign="top">
-<h3>Voice Pill</h3>
-Native macOS dictation: hold a key, speak, the text appears where you type.<br><br>
-<i>Write-up coming soon.</i>
+<h3><a href="personal/voice-pill.md">Voice Pill</a></h3>
+Free, private dictation for Mac and Windows: press a shortcut, speak, and the text appears where you type.<br><br>
+<a href="personal/voice-pill.md"><img src="images/voicepill-card.png" alt="Voice Pill logo"></a>
 </td>
 <td width="50%" valign="top">
 <h3>Work projects</h3>
