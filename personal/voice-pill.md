@@ -8,7 +8,7 @@ typing. It runs entirely on your own computer, on Mac and Windows.**
 | | |
 |---|---|
 | **Role** | Product, design and development, solo |
-| **Stack** | Swift, Python, on-device speech-to-text, local AI model |
+| **Stack** | Swift, Python, Whisper (speech-to-text), local AI model for punctuation |
 | **Speed** | ~1 s for a short dictation · ~2 s for 40 s of speech |
 | **Status** | Used daily on Mac · Windows version in testing |
 
@@ -27,45 +27,22 @@ browser, an editor, a chat, even a full-screen app.
 **Under the hood:** the small floating pill never steals focus from the app you're
 using, so the text always lands in the right place.
 
-<img src="../images/voicepill-anywhere.png" alt="The recording pill" width="100%">
+<p align="center"><img src="../images/voicepill-anywhere.png" alt="The recording pill" width="60%"></p>
 
-### 2. Fast, every time
-
-Short dictations come back in about a second.
-
-**Under the hood:** the speech models take 20–40 s to load. A background helper reloads
-them as soon as the computer restarts, so even the first dictation of the day is instant.
-
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="../images/voicepill-speed-dark.svg">
-  <img src="../images/voicepill-speed-light.svg" alt="Dictation speed before and after" width="100%">
-</picture>
-
-### 3. Clean text
+### 2. Clean text
 
 Commas, full stops and capital letters are added for you, in any language.
 
-**Under the hood:** a small AI model adds the punctuation, but it can only add punctuation:
-it's not allowed to change a single word you said.
+**Under the hood:** two AI models run on your computer: one listens and writes down what
+you say (Whisper), and a second, smaller one adds the punctuation without changing your words.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="../images/voicepill-text-dark.svg">
   <img src="../images/voicepill-text-light.svg" alt="What you said versus what gets pasted" width="100%">
 </picture>
 
-### 4. Simple setup
+### 3. Simple setup
 
 The first time you open it, you pick your shortcut and language. Same setup on Mac and Windows.
 
-<img src="../images/voicepill-setup.png" alt="Setup window" width="100%">
-
-## How it works
-
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="../images/voicepill-flow-dark.svg">
-  <img src="../images/voicepill-flow-light.svg" alt="How Voice Pill works" width="100%">
-</picture>
-
-1. **Record:** your shortcut starts and stops the recording.
-2. **Turn speech into text:** a speech model on your computer writes down what you said.
-3. **Add punctuation and paste:** a small local AI model adds punctuation, then the text is pasted into your app.
+<p align="center"><img src="../images/voicepill-setup.png" alt="Setup window" width="70%"></p>
