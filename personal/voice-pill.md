@@ -36,11 +36,6 @@ Commas, full stops and capital letters are added for you, in any language.
 **Under the hood:** two AI models run on your computer: one listens and writes down what
 you say (Whisper), and a second, smaller one adds the punctuation without changing your words.
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="../images/voicepill-text-dark.svg">
-  <img src="../images/voicepill-text-light.svg" alt="What you said versus what gets pasted" width="100%">
-</picture>
-
 ### 3. Simple setup
 
 The first time you open it, you pick your shortcut and language. Same setup on Mac and Windows.
