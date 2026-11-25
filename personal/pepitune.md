@@ -10,7 +10,7 @@ insights and a chat assistant.**
 |---|---|
 | **Role** | Product, design and full-stack development, solo |
 | **Stack** | Next.js 14, TypeScript, Supabase (Postgres), Vercel, Gemini via OpenRouter, Whisper |
-| **Scale** | 10+ external data sources · 62 API endpoints · 59 database migrations · ~1,000 songs/min |
+| **Scale** | 8+ external services · 62 API endpoints · 59 database migrations · ~1,000 songs/min |
 | **Status** | Live at [pepitune.ai](https://pepitune.ai), in private beta |
 
 ## The problem
@@ -36,12 +36,11 @@ Postgres. Row-level security in Postgres means users only ever see their own dat
 Every song gets a **language, genre, sub-genre and mood**, and you can filter by any mix
 of them (e.g. Italian + Pop + Energetic).
 
-**Under the hood:** a 10-phase pipeline that orchestrates **10+ services**: lyrics
-providers, Shazam audio matching, Spotify, Genius and Apple Music catalogues, Whisper
-speech-to-text and an LLM. It runs 100 songs concurrently, falls back to the next
-source when one misses, tries free sources before paid ones (e.g. a 30,000-word
-dictionary before any API for language), and ends with a **supervisor LLM** that
-re-checks inconsistent tags before saving.
+**Under the hood:** no single source knows all of this, so the app orchestrates **8+
+services**: a self-hosted 20M-song lyrics database, Genius, Musixmatch, Apple Music's
+catalogue, Whisper speech-to-text and Gemini. It processes 70 songs at a time, falls back
+to the next source when one misses, and runs cheap local checks before any paid model
+(see [How detection works](#how-detection-works)).
 
 <img src="../images/pepitune-detection.gif" alt="Songs with language, genre, sub-genre and mood tags" width="100%">
 
@@ -79,6 +78,46 @@ from step 2, aggregated per user in Postgres.
 
 <img src="../images/pepitune-analytics.png" alt="Analytics page" width="100%">
 
+## How detection works
+
+```mermaid
+flowchart TB
+    S[Song] --> C{"Already in the<br/>shared cache?"}
+    C -- yes --> DB
+    C -- no --> L1
+
+    subgraph LYR["Lyrics · first hit wins"]
+        direction LR
+        L1["Self-hosted LRCLIB<br/>20M songs"] --> L2[Genius] --> L3["Apple preview<br/>+ Whisper"] --> L4["Musixmatch"]
+    end
+
+    subgraph LANG["Language"]
+        direction LR
+        A1["Script + accent<br/>checks"] --> A2["Word lists,<br/>6 languages"] --> A3["Gemini, only<br/>if unsure"]
+    end
+
+    subgraph GEN["Genre"]
+        direction LR
+        G1["Apple Music catalogue<br/>8 country stores"] --> G2["Title + artist<br/>must match"] --> G3["Genre +<br/>sub-genre"]
+    end
+
+    subgraph MOOD["Mood"]
+        direction LR
+        M1["Gemini 2.5 Flash Lite<br/>title · artist · genre"] --> M2["Example songs<br/>per mood"]
+    end
+
+    L4 --> A1
+    C -- no --> G1
+    G3 --> M1
+    A3 --> DB[("Postgres")]
+    G3 --> DB
+    M2 --> DB
+```
+
+- **Language** comes from the lyrics: writing system and accents first, then word counts across six languages. Gemini is only asked when the count is unsure, and its answer can overrule it. When the lyrics came from transcribing the audio, Whisper's own language guess is the backup.
+- **Genre** comes from Apple Music's catalogue, accepted only when title and artist match, then split into a main genre and a sub-genre.
+- **Mood** is classified by Gemini from the title, artist and genre, guided by example songs for each of the 8 moods.
+
 ## Architecture
 
 ```mermaid
@@ -87,8 +126,8 @@ flowchart LR
     APP --> API["62 API routes<br/>(serverless)"]
     API --> DB[("Supabase<br/>Postgres + Auth + RLS")]
     API --> SP[Spotify Web API]
-    API --> PIPE["Tagging pipeline"]
-    PIPE --> EXT["Lyrics, Shazam,<br/>music catalogues"]
-    PIPE --> AI["LLM (Gemini) +<br/>Whisper"]
+    API --> PIPE["Detection pipeline"]
+    PIPE --> EXT["Lyrics sources,<br/>Apple Music catalogue"]
+    PIPE --> AI["Gemini + Whisper"]
     API --> AI
 ```
