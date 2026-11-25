@@ -9,7 +9,7 @@ insights and a chat assistant.**
 | | |
 |---|---|
 | **Role** | Product, design and full-stack development, solo |
-| **Stack** | Next.js 14, TypeScript, Supabase (Postgres), Vercel, Gemini via OpenRouter, Whisper |
+| **Stack** | Next.js 14, TypeScript, Supabase (Postgres), Vercel, LLM APIs, speech-to-text |
 | **Scale** | 8+ external services · 62 API endpoints · 59 database migrations · ~1,000 songs/min |
 | **Status** | Live at [pepitune.ai](https://pepitune.ai), in private beta |
 
@@ -37,8 +37,8 @@ Every song gets a **language, genre, sub-genre and mood**, and you can filter by
 of them (e.g. Italian + Pop + Energetic).
 
 **Under the hood:** no single source knows all of this, so the app orchestrates **8+
-services**: a self-hosted 20M-song lyrics database, Genius, Musixmatch, Apple Music's
-catalogue, Whisper speech-to-text and Gemini. It processes 70 songs at a time, falls back
+services**: several lyrics sources (including a self-hosted one), music catalogues,
+speech-to-text and LLMs. It processes songs in large parallel batches, falls back
 to the next source when one misses, and runs cheap local checks before any paid model
 (see [How detection works](#how-detection-works)).
 
@@ -88,22 +88,22 @@ flowchart TB
 
     subgraph LYR["Lyrics · first hit wins"]
         direction LR
-        L1["Self-hosted LRCLIB<br/>20M songs"] --> L2[Genius] --> L3["Apple preview<br/>+ Whisper"] --> L4["Musixmatch"]
+        L1["Self-hosted<br/>lyrics database"] --> L2["Lyrics<br/>provider"] --> L3["Audio preview<br/>+ speech-to-text"] --> L4["Backup<br/>lyrics search"]
     end
 
     subgraph LANG["Language"]
         direction LR
-        A1["Script + accent<br/>checks"] --> A2["Word lists,<br/>6 languages"] --> A3["Gemini, only<br/>if unsure"]
+        A1["Fast local<br/>checks"] --> A2["Statistical<br/>scoring"] --> A3["LLM, only<br/>if unsure"]
     end
 
     subgraph GEN["Genre"]
         direction LR
-        G1["Apple Music catalogue<br/>8 country stores"] --> G2["Title + artist<br/>must match"] --> G3["Genre +<br/>sub-genre"]
+        G1["Music catalogues"] --> G2["Match<br/>verification"] --> G3["Genre +<br/>sub-genre"]
     end
 
     subgraph MOOD["Mood"]
         direction LR
-        M1["Gemini 2.5 Flash Lite<br/>title · artist · genre"] --> M2["Example songs<br/>per mood"]
+        M1["LLM classifier"] --> M2["Guided by<br/>reference examples"]
     end
 
     L4 --> A1
@@ -114,9 +114,9 @@ flowchart TB
     M2 --> DB
 ```
 
-- **Language** comes from the lyrics: writing system and accents first, then word counts across six languages. Gemini is only asked when the count is unsure, and its answer can overrule it. When the lyrics came from transcribing the audio, Whisper's own language guess is the backup.
-- **Genre** comes from Apple Music's catalogue, accepted only when title and artist match, then split into a main genre and a sub-genre.
-- **Mood** is classified by Gemini from the title, artist and genre, guided by example songs for each of the 8 moods.
+- **Language:** cheap local checks decide most songs. An LLM is only called when they're unsure, which keeps cost low.
+- **Genre:** taken from music catalogues, and only accepted when the match is verified.
+- **Mood:** an LLM classifier, guided by reference examples for each of the 8 moods.
 
 ## Architecture
 
@@ -127,7 +127,7 @@ flowchart LR
     API --> DB[("Supabase<br/>Postgres + Auth + RLS")]
     API --> SP[Spotify Web API]
     API --> PIPE["Detection pipeline"]
-    PIPE --> EXT["Lyrics sources,<br/>Apple Music catalogue"]
-    PIPE --> AI["Gemini + Whisper"]
+    PIPE --> EXT["Lyrics sources,<br/>music catalogues"]
+    PIPE --> AI["LLMs +<br/>speech-to-text"]
     API --> AI
 ```
