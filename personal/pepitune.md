@@ -46,8 +46,9 @@ to the next source when one misses, and runs cheap local checks before any paid 
 
 ### 3. Playlists
 
-All playlists in one place, including new ones built from tags, synced back to Spotify
-in one click.
+Create playlists from the detected tags, in two ways: **pick the filters yourself** (e.g.
+Italian + Chill) or **just ask Pepito**. All your playlists live in one place and sync back
+to Spotify in one click.
 
 **Under the hood:** playlists are written back through the Spotify Web API, with tracks
 added in batches and a custom cover uploaded. A playlist made in Pepitune is a real
@@ -70,8 +71,17 @@ then the LLM re-ranks the user's own tracks to pick the ones that fit.
 
 ### 5. Analytics
 
-A listening identity ("The Global Wanderer"), your mood mix, and a globe of where your
-music comes from.
+A dashboard about your music, built from the tags. Each card shows one thing:
+
+- **Your identity:** a short personality summary of your taste
+- **Emotional fingerprint:** your mix of moods and the dominant one
+- **Music diversity:** how varied your library is across genre, mood, language and decade
+- **Global soundtrack:** an interactive globe of the countries your artists come from
+- **Linguistic palette:** the languages you listen to
+- **Music universe:** your genres and sub-genres
+- **Time machine:** which decades your songs come from
+- **Most-loved artists:** the artists that define your library
+- **Audio DNA:** the sound of your library, like average tempo
 
 **Under the hood:** none of this exists in Spotify's data. It's computed from the tags
 from step 2, aggregated per user in Postgres.
