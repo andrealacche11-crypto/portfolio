@@ -8,7 +8,7 @@ typing. It runs entirely on your own computer, on Mac and Windows.**
 | | |
 |---|---|
 | **Role** | Product, design and development, solo |
-| **Stack** | Swift, Python, Whisper (speech-to-text), local AI model for punctuation |
+| **Stack** | Swift, Python, Whisper (speech-to-text), Qwen3 (punctuation) |
 | **Speed** | ~1 s for a short dictation · ~2 s for 40 s of speech |
 | **Status** | Used daily on Mac · Windows version in testing |
 
@@ -34,7 +34,7 @@ using, so the text always lands in the right place.
 Commas, full stops and capital letters are added for you, in any language.
 
 **Under the hood:** two AI models run on your computer: one listens and writes down what
-you say (Whisper), and a second, smaller one adds the punctuation without changing your words.
+you say (Whisper), and a second, smaller one (Qwen3) adds the punctuation without changing your words.
 
 ### 3. Simple setup
 
